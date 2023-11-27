@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "ci-migrator"
+version = "0.1.0"
+description = "Python CLI tool to convert between different CI system configuration"
+authors = ["Shakhawath Shah"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.group.dev.dependencies]
+typer = {extras = ["all"], version = "^0.9.0"}
+PyInquirer = "^1.0.3"
+rich = "^13.7.0"
+PyYAML = "^6.0.1"
+marshmallow = "^3.20.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

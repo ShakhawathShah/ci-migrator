@@ -1,0 +1,1 @@
+print("Hello from ci-migrator/__init__.py")
