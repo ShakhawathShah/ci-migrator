@@ -1,0 +1,252 @@
+// CircleCI Schema
+{
+    "version": 2.1,
+    "orbs": {"node": "node-orb", "python": "python-orb"},
+    "commands": {
+        "pip_install": {
+            "description": "This is a pip install",
+            "parameters": {
+                "pip": {"type": "str", "default": "pip"},
+                "version": {"type": "int", "default": "3"},
+            },
+            "steps": [{"run": {"name": "Install", "command": "pip install PyYaml"}}],
+        },
+        "aws_auth": {
+            "description": "This is a aws auth command",
+            "parameters": {
+                "aws_account": {"type": "str", "default": "account1"},
+                "aws_key": {"type": "str", "default": "password"},
+            },
+            "steps": [
+                {"run": {"name": "aws auth", "command": "aws sso login"}},
+                {"run": {"name": "Bye", "command": "echo 'Bye World!'"}},
+            ],
+        },
+    },
+    "parameters": {
+        "global1": {"type": "str", "default": "hello"},
+        "global": {"type": "bool", "default": "false"},
+    },
+    "jobs": {
+        "node_install": {
+            "environment": {"FOO": "bar"},
+            "parameters": {
+                "param1": {"type": "str", "default": "hello"},
+                "param2": {"type": "bool", "default": "false"},
+                "param3": {"type": "bool", "default": "false"},
+            },
+            "docker": [{"image": "node-image"}],
+            "steps": [
+                {"run": {"name": "Hello", "command": "echo 'Hello World!'"}},
+                {"run": {"name": "Bye", "command": "echo 'Bye World!'"}},
+            ],
+        },
+        "python_install": {
+            "environment": {"BAR": "FOO"},
+            "parameters": {
+                "param1": {"type": "str", "default": "hello"},
+            },
+            "docker": [{"image": "python-image"}],
+            "steps": [
+                {"run": {"name": "Hello", "command": "echo 'Hello World!'"}},
+            ],
+        },
+    },
+    "workflows": {
+        "workflow_name": {
+            "jobs": [
+                {
+                    "job_one": {
+                        "name": "job_one",
+                        "requires": "previous",
+                        "context": ["env1", "env2"],
+                        "filters": {
+                            "branches": {"only": "main", "ignore": ["master"]},
+                            "tags": {"only": "1.2.3", "ignore": "0.0.0"},
+                        },
+                    }
+                }
+            ]
+        }
+    }
+}
+
+// Shakmodel Schema
+{
+    "name": "shak workflow",
+    "trigger": {
+        "push": {
+            "branches": ["main"],
+            "branches-ignore": ["master"],
+            "tags": ["v2"],
+            "tags-ignore": ["v1"],
+        },
+    },
+    "parameters": {
+        "global1": {"type": "str", "default": "hello"},
+        "global": {"type": "bool", "default": "false"},
+    },
+    "jobs": {
+        "node_install": {
+            "env-var": {"FOO": "bar"},
+            "parameters": {
+                "param1": {"type": "str", "default": "hello"},
+                "param2": {"type": "bool", "default": "false"},
+            },
+            "image": "image_name",
+            "steps": [
+                {
+                    "name": "Checkout code",
+                    "run": "echo 'Checking out code'",
+                },
+                {
+                    "name": "Build and test",
+                    "run": "echo 'Building and testing'",
+                },
+            ],
+        }
+    },
+    "run-order": [
+        {
+            "name": "job_one",
+        },
+        {
+            "name": "job_two",
+            "depends-on": ["previous"],
+        },
+    ],
+}
+
+
+// Github Actions Schema
+{
+    "name": "MyGitHubModel",
+    "run_name": "MyGitHubRun",
+    "on": {
+        "label": {"types": ["created", "edited", "deleted"]},
+        "issues": {"types": ["opened", "labelled"]},
+        "push": {
+            "branches": ["main"],
+            "branches_ignore": ["master"],
+            "tags": ["v2"],
+            "tags_ignore": ["v1"],
+            "paths": ["src"],
+            "paths_ignore": ["docs"],
+        },
+        "pull_request": {
+            "branches": ["feature"],
+            "branches_ignore": ["bugfix"],
+            "tags": ["v3"],
+            "tags_ignore": ["v2"],
+            "paths": ["src"],
+            "paths_ignore": ["docs"],
+        },
+    },
+    "permissions": {
+        "actions": "read",
+        "checks": "write",
+        "contents": "none",
+        "deployments": "read",
+        "id": "none",
+        "issues": "read",
+        "discussions": "none",
+        "packages": "write",
+        "pages": "none",
+        "pull_requests": "read",
+        "repository_projects": "none",
+        "security_events": "read",
+        "statuses": "none",
+    },
+    "env": {"GITHUB_TOKEN": "secret-token", "MY_ENV_VARIABLE": "some-value"},
+    "jobs": {
+        "build_job": {
+            "name": "Build",
+            "permissions": {
+                "actions": "read",
+                "checks": "none",
+                "contents": "write",
+                "deployments": "none",
+                "id": "read",
+                "issues": "read",
+                "discussions": "none",
+                "packages": "write",
+                "pages": "none",
+                "pull_requests": "read",
+                "repository_projects": "none",
+                "security_events": "none",
+                "statuses": "read",
+            },
+            "needs": ["test_job"],
+            "if": "${{ github.event_name == 'push' }}",
+            "runs_on": ["ubuntu-latest"],
+            "environment": {"name": "production", "url": "https://example.com"},
+            "env": {"MY_JOB_VARIABLE": "job-value"},
+            "steps": [
+                {
+                    "id": "step1",
+                    "if": "${{ success() }}",
+                    "name": "Checkout code",
+                    "uses": "actions/checkout@v2",
+                    "run": "echo 'Checking out code'",
+                },
+                {
+                    "id": "step2",
+                    "if": "${{ github.event_name == 'pull_request' }}",
+                    "name": "Build and test",
+                    "uses": "some/action@v1",
+                    "run": "echo 'Building and testing'",
+                    "with": {"param1": "value1", "param2": "value2"},
+                    "working_directory": "./temp",
+                },
+            ],
+            "continue_on_error": False,
+            "container": {
+                "image": "docker-image",
+                "env": {"DOCKER_ENV_VARIABLE": "docker-value"},
+                "ports": [8080],
+                "volumes": ["/data:/app/data"],
+                "options": "--rm",
+            },
+        },
+        "test_job": {
+            "name": "Test",
+            "permissions": {
+                "actions": "write",
+                "checks": "read",
+                "contents": "none",
+                "deployments": "read",
+                "id": "write",
+                "issues": "none",
+                "discussions": "write",
+                "packages": "read",
+                "pages": "none",
+                "pull_requests": "none",
+                "repository_projects": "write",
+                "security_events": "none",
+                "statuses": "none",
+            },
+            "needs": [],
+            "if": "${{ always() }}",
+            "runs_on": ["ubuntu-latest"],
+            "environment": {"name": "production", "url": "https://example.com"},
+            "env": {},
+            "steps": [
+                {
+                    "id": "step3",
+                    "if": "someting",
+                    "name": "Run tests",
+                    "uses": "test/action@v1",
+                    "run": "echo 'Running tests'",
+                }
+            ],
+            "continue_on_error": True,
+            "container": {
+                "image": "test-image",
+                "env": {},
+                "ports": [],
+                "volumes": [],
+                "options": "",
+            },
+        },
+    },
+}

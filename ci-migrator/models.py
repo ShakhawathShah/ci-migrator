@@ -1,6 +1,4 @@
 import json
-from re import S
-from turtle import st
 from typing import Dict, Optional
 from dataclasses import asdict, dataclass
 
@@ -47,7 +45,6 @@ class CircleCIModel:
             shak_jobs[job_name] = {
                 "env-var": job_data.get("environment"),
                 "parameters": self.parameters,
-                # "parameters": {param_name for param_name, param_data in job_data.get("parameters").items()},
                 "image": job_data.get("docker")[0].get("image"),
                 "steps": steps,
             }
@@ -110,8 +107,6 @@ class ShakModel:
                 "jobs": list(self.jobs.keys()),
             }
         }
-        # if self.trigger:
-        #     circleci_filters = {"filters": {list(self.trigger.keys())[0]: {"only": list(self.trigger.values())[0]}}}}
 
         return CircleCIModel(
             version=2.1, jobs=circleci_jobs, workflows=circleci_workflows

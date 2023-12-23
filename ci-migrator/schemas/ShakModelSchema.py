@@ -74,54 +74,6 @@ class ShakModelSchema(Schema):
         fields.Nested(RunOrderSchema), data_key="run-order", required=True
     )
 
-
-# Example usage:
-data = {
-    "name": "shak workflow",
-    "trigger": {
-        "push": {
-            "branches": ["main"],
-            "branches-ignore": ["master"],
-            "tags": ["v2"],
-            "tags-ignore": ["v1"],
-        },
-    },
-    "parameters": {
-        "global1": {"type": "str", "default": "hello"},
-        "global": {"type": "bool", "default": "false"},
-    },
-    "jobs": {
-        "node_install": {
-            "env-var": {"FOO": "bar"},
-            "parameters": {
-                "param1": {"type": "str", "default": "hello"},
-                "param2": {"type": "bool", "default": "false"},
-            },
-            "image": "image_name",
-            "steps": [
-                {
-                    "name": "Checkout code",
-                    "run": "echo 'Checking out code'",
-                },
-                {
-                    "name": "Build and test",
-                    "run": "echo 'Building and testing'",
-                },
-            ],
-        }
-    },
-    "run-order": [
-        {
-            "name": "job_one",
-        },
-        {
-            "name": "job_two",
-            "depends-on": ["previous"],
-        },
-    ],
-}
-
-
 # schema = ShakModelSchema()
 # result = schema.load(data)
 

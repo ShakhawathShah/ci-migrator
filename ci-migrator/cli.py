@@ -1,5 +1,4 @@
 import typer
-import subprocess
 from PyInquirer import prompt, print_json, Separator
 from rich import print as rprint
 import yaml

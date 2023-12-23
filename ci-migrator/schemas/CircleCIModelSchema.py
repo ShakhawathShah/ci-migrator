@@ -7,14 +7,6 @@ class ParametersNameSchema(Schema):
     type = fields.Str(required=True)
     default = fields.Str(required=True)
 
-    # @validates("type")
-    # def validate_type(self, value):
-    #     valid_types = ["str", "bool", "int"]  # Add more valid types as needed
-    #     if value not in valid_types:
-    #         raise ValidationError(
-    #             f"Invalid type. Supported types: {', '.join(valid_types)}"
-    #         )
-
 
 class RunSchema(Schema):
     name = fields.Str()
@@ -96,80 +88,6 @@ class CircleCIModelSchema(Schema):
     def validate_version(self, value):
         if value != 2.1:
             raise ValidationError("Invalid version. Only '2.1' is supported.")
-
-
-# Example usage:
-data = {
-    "version": 2.1,
-    "orbs": {"node": "node-orb", "python": "python-orb"},
-    "commands": {
-        "pip_install": {
-            "description": "This is a pip install",
-            "parameters": {
-                "pip": {"type": "str", "default": "pip"},
-                "version": {"type": "int", "default": "3"},
-            },
-            "steps": [{"run": {"name": "Install", "command": "pip install PyYaml"}}],
-        },
-        "aws_auth": {
-            "description": "This is a aws auth command",
-            "parameters": {
-                "aws_account": {"type": "str", "default": "account1"},
-                "aws_key": {"type": "str", "default": "password"},
-            },
-            "steps": [
-                {"run": {"name": "aws auth", "command": "aws sso login"}},
-                {"run": {"name": "Bye", "command": "echo 'Bye World!'"}},
-            ],
-        },
-    },
-    "parameters": {
-        "global1": {"type": "str", "default": "hello"},
-        "global": {"type": "bool", "default": "false"},
-    },
-    "jobs": {
-        "node_install": {
-            "environment": {"FOO": "bar"},
-            "parameters": {
-                "param1": {"type": "str", "default": "hello"},
-                "param2": {"type": "bool", "default": "false"},
-                "param3": {"type": "bool", "default": "false"},
-            },
-            "docker": [{"image": "node-image"}],
-            "steps": [
-                {"run": {"name": "Hello", "command": "echo 'Hello World!'"}},
-                {"run": {"name": "Bye", "command": "echo 'Bye World!'"}},
-            ],
-        },
-        "python_install": {
-            "environment": {"BAR": "FOO"},
-            "parameters": {
-                "param1": {"type": "str", "default": "hello"},
-            },
-            "docker": [{"image": "python-image"}],
-            "steps": [
-                {"run": {"name": "Hello", "command": "echo 'Hello World!'"}},
-            ],
-        },
-    },
-    "workflows": {
-        "workflow_name": {
-            "jobs": [
-                {
-                    "job_one": {
-                        "name": "job_one",
-                        "requires": "previous",
-                        "context": ["env1", "env2"],
-                        "filters": {
-                            "branches": {"only": "main", "ignore": ["master"]},
-                            "tags": {"only": "1.2.3", "ignore": "0.0.0"},
-                        },
-                    }
-                }
-            ]
-        }
-    },
-}
 
 
 # schema = CircleCIModelSchema()
