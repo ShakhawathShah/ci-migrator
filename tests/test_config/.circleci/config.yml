@@ -1,0 +1,18 @@
+version: 2.1
+
+jobs:
+  hello-job:
+    docker:
+      - image: cimg/node:17.2.0 # the primary container, where your job's commands are run
+    steps:
+      - run: 
+          name: "hello world" # run the `echo` command
+          command: echo "hello world" # run the `echo` command
+
+workflows:
+  my-workflow:
+    jobs:
+      - hello-job:
+          name: hello
+      - hello-job2:
+          name: hello2

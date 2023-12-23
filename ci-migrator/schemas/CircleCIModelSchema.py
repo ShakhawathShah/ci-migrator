@@ -75,7 +75,9 @@ class WorkflowJobSchema(Schema):
 
 
 class WorkflowSchema(Schema):
-    jobs = fields.List(fields.Dict(keys=fields.Str(), values=fields.Nested(WorkflowJobSchema)))
+    jobs = fields.List(
+        fields.Dict(keys=fields.Str(), values=fields.Nested(WorkflowJobSchema))
+    )
 
 
 class CircleCIModelSchema(Schema):
@@ -154,7 +156,7 @@ data = {
         "workflow_name": {
             "jobs": [
                 {
-                    "job_one":{
+                    "job_one": {
                         "name": "job_one",
                         "requires": "previous",
                         "context": ["env1", "env2"],
@@ -175,4 +177,3 @@ data = {
 
 # circleci_yaml = yaml.dump(data, default_flow_style=False, sort_keys=False)
 # print(circleci_yaml)
-

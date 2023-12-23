@@ -18,16 +18,23 @@ def validate_field(value):
 
 class StepSchema(Schema):
     id_token = fields.String(required=True, data_key="id")
-    if_condition = fields.String(data_key="if", required=False)
+    if_condition = fields.String(data_key="if", required=False, allow_none=True)
     name = fields.String(required=True)
-    uses = fields.String(required=True)
+    uses = fields.String(required=False, allow_none=True)
     run = fields.String(required=True)
-    working_directory = fields.Str(required=False)
-    shell = fields.Str(required=False)
+    working_directory = fields.Str(required=False, allow_none=True)
+    shell = fields.Str(required=False, allow_none=True)
     with_field = fields.Dict(
-        data_key="with", keys=fields.Str(), values=fields.Str(), many=True
+        data_key="with",
+        keys=fields.Str(),
+        values=fields.Str(),
+        many=True,
+        required=False,
+        allow_none=True,
     )
-    env = fields.Dict(keys=fields.Str(), values=fields.Str(), required=False)
+    env = fields.Dict(
+        keys=fields.Str(), values=fields.Str(), required=False, allow_none=True
+    )
 
 
 class PermissionsSchema(Schema):
@@ -53,32 +60,44 @@ class EnvironmentSchema(Schema):
 
 class ContainerSchema(Schema):
     image = fields.String(required=True)
-    env = fields.Dict(keys=fields.Str(), values=fields.Str(), required=False)
-    ports = fields.List(fields.Integer(), required=False)
-    volumes = fields.List(fields.String(), required=False)
-    options = fields.String(required=False)
+    env = fields.Dict(
+        keys=fields.Str(), values=fields.Str(), required=False, allow_none=True
+    )
+    ports = fields.List(fields.Integer(), required=False, allow_none=True)
+    volumes = fields.List(fields.String(), required=False, allow_none=True)
+    options = fields.String(required=False, allow_none=True)
 
 
 class JobSchema(Schema):
     name = fields.Str(required=True)
     permissions = fields.Nested(PermissionsSchema, required=False)
-    needs = fields.List(fields.Str(), required=False)
-    if_condition = fields.Str(data_key="if", required=True)
-    runs_on = fields.List(fields.Str(), required=False)
-    environment = fields.Nested(EnvironmentSchema, required=False)
-    env = fields.Dict(keys=fields.Str(), values=fields.Str(), required=False)
+    needs = fields.List(
+        fields.Str(required=False, allow_none=True), required=False, allow_none=True
+    )
+    if_condition = fields.Str(data_key="if", required=True, allow_none=True)
+    runs_on = fields.List(fields.Str(), required=False, data_key="runs-on")
+    environment = fields.Nested(EnvironmentSchema, required=False, allow_none=True)
+    env = fields.Dict(
+        keys=fields.Str(), values=fields.Str(), required=False, allow_none=True
+    )
     steps = fields.List(fields.Nested(StepSchema), required=True)
-    continue_on_error = fields.Bool(required=False)
+    continue_on_error = fields.Bool(required=False, data_key="continue-on-error")
     container = fields.Nested(ContainerSchema, required=True)
 
 
 class FiltersSchema(Schema):
-    branches = fields.List(fields.String(), required=False)
-    branches_ignore = fields.List(fields.String(), required=False)
-    tags = fields.List(fields.String(), required=False)
-    tags_ignore = fields.List(fields.String(), required=False)
-    paths = fields.List(fields.String(), required=False)
-    paths_ignore = fields.List(fields.String(), required=False)
+    branches = fields.List(fields.String(), required=False, allow_none=True)
+    branches_ignore = fields.List(
+        fields.String(), required=False, allow_none=True, data_key="branches-ignore"
+    )
+    tags = fields.List(fields.String(required=False), required=False, allow_none=True)
+    tags_ignore = fields.List(
+        fields.String(), required=False, allow_none=True, data_key="tags-ignore"
+    )
+    paths = fields.List(fields.String(), required=False, allow_none=True)
+    paths_ignore = fields.List(
+        fields.String(), required=False, allow_none=True, data_key="paths-ignore"
+    )
 
 
 class OnSchema(Schema):
@@ -100,10 +119,12 @@ class OnSchema(Schema):
 
 class GitHubModelSchema(Schema):
     name = fields.Str(required=True)
-    run_name = fields.Str(required=True)
+    run_name = fields.Str(data_key="run-name", required=False)
     on = fields.Nested(OnSchema, required=True)
-    permissions = fields.Nested(PermissionsSchema, required=False)
-    env = fields.Dict(keys=fields.Str(), values=fields.Str(), required=False)
+    permissions = fields.Nested(PermissionsSchema, required=False, allow_none=True)
+    env = fields.Dict(
+        keys=fields.Str(), values=fields.Str(), required=False, allow_none=True
+    )
     jobs = fields.Dict(keys=fields.Str(), values=fields.Nested(JobSchema))
 
 
